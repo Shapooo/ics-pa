@@ -37,7 +37,12 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_help(char *args);
-
+static int cmd_si(char *args);
+static int cmd_info(char *args);
+static int cmd_p(char *args);
+static int cmd_x(char *args);
+static int cmd_w(char *args);
+static int cmd_d(char *args);
 static struct {
   char *name;
   char *description;
@@ -46,12 +51,61 @@ static struct {
   { "help", "Display informations about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-
+  { "si", "Single step execution", cmd_si},
+  { "info", "Print status of the program", cmd_info},
+  { "p", "Evaluate the expression", cmd_p},
+  { "x", "Scan the blocks of memory", cmd_x},
+  { "w", "Set a watchpoint that returns value of a varing expression", cmd_w},
+  { "d", "Delete a watchpoint", cmd_d}
   /* TODO: Add more commands */
-
 };
 
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))
+
+static int cmd_si(char *args)
+{
+  char *stepStr = strtok(NULL, " ");
+  if (stepStr && *stepStr) {
+    int len = strlen(stepStr), stepNum = 0;
+    for (int i = 0; i < len; ++i) {
+      if (stepStr[i] > '9' || stepStr[i] < 0) {
+        printf("Pls input a int after si\n");
+        break;
+      }
+      stepNum *= 10;
+      stepNum += stepStr[i] - '0';
+    }
+    cpu_exec(stepNum);
+  } else {
+    printf("Pls input a int after si\n");
+  }
+  return 0;
+}
+
+static int cmd_info(char *args)
+{
+  return 0;
+}
+
+static int cmd_p(char *args)
+{
+  return 0;
+}
+
+static int cmd_x(char *args)
+{
+  return 0;
+}
+
+static int cmd_w(char *args)
+{
+  return 0;
+}
+
+static int cmd_d(char *args)
+{
+  return 0;
+}
 
 static int cmd_help(char *args) {
   /* extract the first argument */

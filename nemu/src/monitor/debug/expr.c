@@ -7,7 +7,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ
+  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_XNUM, TK_REG
 
   /* TODO: Add more token types */
 
@@ -21,7 +21,14 @@ static struct rule {
   /* TODO: Add more rules.
    * Pay attention to the precedence level of different rules.
    */
-
+  {"0x[[:xdigit:]]+", TK_XNUM},
+  {"[[:digit:]]+", TK_NUM},
+  {"\\$[[:alpha:]]", TK_REG},
+  {"\\*", '*'},
+  {"\\(", '('},
+  {"\\)", ')'},
+  {"-", '-'},
+  {"/", '/'},
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"==", TK_EQ}         // equal
@@ -34,7 +41,8 @@ static regex_t re[NR_REGEX] = {};
 /* Rules are used for many times.
  * Therefore we compile them only once before any usage.
  */
-void init_regex() {
+void init_regex()
+{
   int i;
   char error_msg[128];
   int ret;

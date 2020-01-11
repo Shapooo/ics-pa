@@ -109,15 +109,162 @@ static bool make_token(char *e)
 
   return true;
 }
-
-uint32_t expr(char *e, bool *success) {
+static int eval(int, int);
+uint32_t expr(char *e, bool *success)
+{
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
-
+  /* TODO(); */
+  int ret = eval(0, nr_token - 1);
+  return ret;
+}
+static bool check_parenthesis(int p, int q);
+static int getPropOp(int p, int q);
+static int str2val(int p);
+static int dereference(int addr);
+static int eval(int p, int q)
+{
+  if (p > q) {
+    return 0;
+    assert(0);
+  } else if (p == q) {
+    return str2val(p);
+  } else if (q - p == 1) {
+    if (tokens[p].type == '-') {
+      return -str2val(q);
+    } else if (tokens[p].type == '*') {
+      return dereference(str2val(q));
+    }
+  } else if (check_parenthesis(p, q) == true) {
+    return eval(p + 1, q - 1);
+  } else {
+    int op_index = getPropOp(p, q);
+    int val1 = eval(p, op_index - 1);
+    int val2 = eval(op_index + 1, q);
+    switch (tokens[op_index].type) {
+    case '+':
+      return val1 + val2;
+    case '-':
+      return val1 - val2;
+    case '*':
+      return val1 * val2;
+    case '/':
+      return val1 / val2;
+    default:
+      assert(0);
+    }
+  }
   return 0;
+}
+
+static int dereference(int addr)
+{
+  return 0;
+}
+int str2dec(char *str)
+{
+  int len = strlen(str);
+  int result = 0;
+  for (int i = 0; i < len; ++i) {
+    result *= 10;
+    result += str[i] - '0';
+  }
+  return result;
+}
+
+int str2hex(char *str)
+{
+  int len = strlen(str);
+  int result = 0;
+  for (int i = 2; i < len; ++i) {
+    int tmp;
+    if (str[i] <= '9' && str[i] >= '0') {
+      tmp = str[i] - '0';
+    } else if (str[i] >= 'a') {
+      tmp = str[i] - 'a';
+    } else {
+      tmp = str[i] - 'A';
+    }
+    result *= 16;
+    result += tmp;
+  }
+  return result;
+}
+int str2val(int p)
+{
+  switch (tokens[p].type) {
+  case TK_NUM:
+    return str2dec(tokens[p].str);
+  case TK_XNUM:
+    return str2hex(tokens[p].str);
+  default:
+    assert(0);
+  }
+}
+#define isOp(type) ((type) == '+' || (type) == '*' || (type) == '/' || (type == '-'))
+
+static inline int inferior(int p, int q)
+{
+  int firstType = 2, secondType = 2;
+  if (tokens[p].type == '+' || tokens[p].type == '-') {
+    firstType = 0;
+  } else if (tokens[p].type == '/' || tokens[p].type == '*') {
+    firstType = 1;
+  }
+
+  if (tokens[q].type == '+' || tokens[q].type == '-') {
+    secondType = 0;
+  } else if (tokens[q].type == '/' || tokens[q].type == '*') {
+    secondType = 1;
+  }
+
+  return (secondType < firstType) ? q : p;
+}
+static int getPropOp(int p, int q)
+{
+  int top = 0, index = p;
+  int propIndex = p;
+  while (index < q) {
+    if (tokens[index].type == '(') {
+      top++;
+    } else if (tokens[index].type == ')') {
+      top--;
+    }
+    if (top == 0 && (isOp(tokens[index].type))) {
+      propIndex = inferior(propIndex, index);
+    }
+    index++;
+  }
+
+  if (propIndex <= p || propIndex > q) {
+    Log("Unproper Index : %d\n", propIndex);
+    return -1;
+  } else {
+    return propIndex;
+  }
+}
+
+static bool check_parenthesis(int p, int q)
+{
+  if (tokens[p].type == '(' && tokens[q].type == ')') {
+    int top = 0;
+    top++;
+    for (int i = p + 1; i < q; ++i) {
+      if (tokens[i].type == '(') {
+        top++;
+      } else if (tokens[i].type == ')') {
+        top--;
+      }
+      if (top == 0) {
+        return false;
+      }
+    }
+    return true;
+  } else {
+    return false;
+  }
 }

@@ -6,21 +6,78 @@
 #include <string.h>
 
 // this should be enough
-static char buf[65536];
-static inline void gen_rand_expr() {
-  buf[0] = '\0';
+static char buf[60000];
+static int buffSize = 0;
+static inline void gen(char c)
+{
+  buf[buffSize++] = c;
+}
+static inline void gen_rand_op()
+{
+  switch (rand() % 4) {
+  case 0:
+    gen('+');
+    break;
+  case 1:
+    gen('-');
+    break;
+  case 2:
+    gen('*');
+    break;
+  case 3:
+    gen('/');
+    break;
+  }
+}
+static inline void gen_num()
+{
+  unsigned int num = rand() % 65535;
+  int low = buffSize;
+  while (num > 0) {
+    buf[buffSize++] = num % 10 + '0';
+    num /= 10;
+  }
+  int high = buffSize - 1;
+  char tmp;
+  while (low < high) {
+    tmp = buf[low];
+    buf[low] = buf[high];
+    buf[high] = tmp;
+    low++;
+    high--;
+  }
+
+}
+static inline void gen_rand_expr()
+{
+  switch (rand() % 3) {
+  case 0:
+    gen_num();
+    break;
+  case 1:
+    gen('(');
+    gen_rand_expr();
+    gen(')');
+    break;
+  default:
+    gen_rand_expr();
+    gen_rand_op();
+    gen_rand_expr();
+    break;
+  }
 }
 
 static char code_buf[65536];
 static char *code_format =
-"#include <stdio.h>\n"
-"int main() { "
-"  unsigned result = %s; "
-"  printf(\"%%u\", result); "
-"  return 0; "
-"}";
+  "#include <stdio.h>\n"
+  "int main() { "
+  "  unsigned result = %s; "
+  "  printf(\"%%u\", result); "
+  "  return 0; "
+  "}";
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   int seed = time(0);
   srand(seed);
   int loop = 1;
@@ -30,7 +87,8 @@ int main(int argc, char *argv[]) {
   int i;
   for (i = 0; i < loop; i ++) {
     gen_rand_expr();
-
+    buf[buffSize] = 0;
+    buffSize = 0;
     sprintf(code_buf, code_format, buf);
 
     FILE *fp = fopen("/tmp/.code.c", "w");
@@ -47,7 +105,10 @@ int main(int argc, char *argv[]) {
     int result;
     fscanf(fp, "%d", &result);
     pclose(fp);
-
+    if (result == 0) {
+      i --;
+      continue;
+    }
     printf("%u %s\n", result, buf);
   }
   return 0;

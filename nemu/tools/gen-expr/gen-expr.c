@@ -8,6 +8,7 @@
 // this should be enough
 static char buf[60000];
 static int buffSize = 0;
+static int tokenSum = 0;
 static inline void gen(char c)
 {
   buf[buffSize++] = c;
@@ -50,20 +51,28 @@ static inline void gen_num()
 }
 static inline void gen_rand_expr()
 {
-  switch (rand() % 3) {
-  case 0:
+  if (tokenSum >= 30) {
     gen_num();
-    break;
-  case 1:
-    gen('(');
-    gen_rand_expr();
-    gen(')');
-    break;
-  default:
-    gen_rand_expr();
-    gen_rand_op();
-    gen_rand_expr();
-    break;
+    tokenSum++;
+  } else {
+    switch (rand() % 3) {
+    case 0:
+      gen_num();
+      tokenSum++;
+      break;
+    case 1:
+      gen('(');
+      tokenSum += 2;
+      gen_rand_expr();
+      gen(')');
+      break;
+    default:
+      tokenSum++;
+      gen_rand_expr();
+      gen_rand_op();
+      gen_rand_expr();
+      break;
+    }
   }
 }
 
@@ -86,9 +95,14 @@ int main(int argc, char *argv[])
   }
   int i;
   for (i = 0; i < loop; i ++) {
+    buffSize = 0;
+    tokenSum = 0;
     gen_rand_expr();
     buf[buffSize] = 0;
-    buffSize = 0;
+    if (tokenSum > 32) {
+      i--;
+      continue;
+    }
     sprintf(code_buf, code_format, buf);
 
     FILE *fp = fopen("/tmp/.code.c", "w");
@@ -96,8 +110,15 @@ int main(int argc, char *argv[])
     fputs(code_buf, fp);
     fclose(fp);
 
-    int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
+    int ret = system("gcc /tmp/.code.c -o /tmp/.expr 2> /tmp/.gccoutput");
     if (ret != 0) continue;
+    fp = fopen("/tmp/.gccoutput", "r");
+    if (fp != NULL && fgetc(fp) != -1) {
+      fclose(fp);
+      i --;
+      continue;
+    }
+    fclose(fp);
 
     fp = popen("/tmp/.expr", "r");
     assert(fp != NULL);
@@ -105,10 +126,10 @@ int main(int argc, char *argv[])
     int result;
     fscanf(fp, "%d", &result);
     pclose(fp);
-    if (result == 0) {
-      i --;
-      continue;
-    }
+    /* if (result == 0) { */
+    /*   i --; */
+    /*   continue; */
+    /* } */
     printf("%u %s\n", result, buf);
   }
   return 0;

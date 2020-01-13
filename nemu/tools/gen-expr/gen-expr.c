@@ -30,13 +30,25 @@ static inline void gen_rand_op()
     break;
   }
 }
+static char *sdig = "0123456789ABCDEF";
 static inline void gen_num()
 {
   unsigned int num = rand() % 65535;
+  int base;
+  switch (rand() % 2) {
+  case 0:
+    base = 10;
+    break;
+  default:
+    base = 16;
+    buf[buffSize++] = '0';
+    buf[buffSize++] = 'x';
+    break;
+  }
   int low = buffSize;
   while (num > 0) {
-    buf[buffSize++] = num % 10 + '0';
-    num /= 10;
+    buf[buffSize++] = sdig[num % base];
+    num /= base;
   }
   int high = buffSize - 1;
   char tmp;
@@ -49,8 +61,16 @@ static inline void gen_num()
   }
 
 }
+static inline void gen_rand_whitespace()
+{
+  int sum = rand() % 2;
+  for (int i = 0; i < sum; ++i) {
+    buf[buffSize++] = ' ';
+  }
+}
 static inline void gen_rand_expr()
 {
+  gen_rand_whitespace();
   if (tokenSum >= 30) {
     gen_num();
     tokenSum++;
@@ -64,11 +84,13 @@ static inline void gen_rand_expr()
       gen('(');
       tokenSum += 2;
       gen_rand_expr();
+      gen_rand_whitespace();
       gen(')');
       break;
     default:
       tokenSum++;
       gen_rand_expr();
+      gen_rand_whitespace();
       gen_rand_op();
       gen_rand_expr();
       break;

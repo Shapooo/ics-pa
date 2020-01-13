@@ -185,9 +185,9 @@ int str2hex(char *str)
     if (str[i] <= '9' && str[i] >= '0') {
       tmp = str[i] - '0';
     } else if (str[i] >= 'a') {
-      tmp = str[i] - 'a';
+      tmp = str[i] - 'a' + 10;
     } else {
-      tmp = str[i] - 'A';
+      tmp = str[i] - 'A' + 10;
     }
     result *= 16;
     result += tmp;

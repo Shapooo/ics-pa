@@ -222,7 +222,7 @@ static inline int inferior(int p, int q)
     secondType = 1;
   }
 
-  return (secondType < firstType) ? q : p;
+  return (secondType <= firstType) ? q : p;
 }
 static int getPropOp(int p, int q)
 {

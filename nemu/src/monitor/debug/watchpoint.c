@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "monitor/watchpoint.h"
 #include "monitor/expr.h"
 
@@ -19,5 +20,38 @@ void init_wp_pool() {
 }
 
 /* TODO: Implement the functionality of watchpoint */
+WP* new_wp()
+{
+  if (free_) {
+    WP* tmp = head;
+    head = free_;
+    free_ = free_->next;
+    head->next = tmp;
+    return head;
+  } else {
+    printf("No more idle watchpoint.\n");
+    assert(0);
+  }
+}
 
+void free_wp(WP *wp)
+{
+  /* assert(wp <= wp[NR_WP]); */
+  /* assert(wp >= wp); */
+  WP *tmp = head;
+  while (tmp && tmp->next != wp) {
+    tmp = tmp->next;
+  }
+  assert(tmp);
+  free(tmp->expr);
+  tmp->next = wp->next;
+  wp->next = free_->next;
+  free_->next = wp;
+}
 
+inline WP* get_wp(int x)
+{
+  assert(x >= 0);
+  assert(x <= NR_WP);
+  return wp_pool + x;
+}

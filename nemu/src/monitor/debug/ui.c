@@ -99,11 +99,20 @@ static int cmd_x(char *args)
 
 static int cmd_w(char *args)
 {
+  WP *wp = new_wp();
+  bool succ;
+  strcpy(wp->expr, args);
+  int tmp = expr(wp->expr, &succ);
+  assert(succ);
+  wp->oldVal = tmp;
   return 0;
 }
 
 static int cmd_d(char *args)
 {
+  int num;
+  sscanf(args, "%d", &num);
+  free_wp(get_wp(num));
   return 0;
 }
 

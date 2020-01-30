@@ -61,5 +61,5 @@ static inline const char* reg_name(int index, int width) {
     default: assert(0);
   }
 }
-
+uint32_t isa_reg_str2val(const char *, bool *);
 #endif

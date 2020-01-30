@@ -44,5 +44,38 @@ void isa_reg_display() {
 }
 
 uint32_t isa_reg_str2val(const char *s, bool *success) {
+  /* return 0; */
+  if (s[2] == 'a' && s[3] == 'x') {
+    *success = true;
+    return reg_l(R_EAX);
+  } else if (s[2] == 'c' && s[3] == 'x') {
+    *success = true;
+    return reg_l(R_ECX);
+  } else if (s[2] == 'b') {
+    if (s[3] == 'x') {
+      *success = true;
+      return reg_l(R_EBX);
+    } else if (s[3] == 'p') {
+      *success = true;
+      return reg_l(R_EBP);
+    }
+  } else if (s[2] == 'd') {
+    if (s[3] == 'x') {
+      *success = true;
+      return reg_l(R_EDX);
+    } else if (s[3] == 'p') {
+      *success = true;
+      return reg_l(R_EBP);
+    }
+  } else if (s[2] == 's') {
+    if (s[3] == 'i') {
+      *success = true;
+      return reg_l(R_ESI);
+    } else if (s[3] == 'p') {
+      *success = true;
+      return reg_l(R_ESP);
+    }
+  }
+  *success = false;
   return 0;
 }

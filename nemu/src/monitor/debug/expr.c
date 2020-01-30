@@ -5,9 +5,10 @@
  */
 #include <sys/types.h>
 #include <regex.h>
+#define isOp(type) ((type) == '+' || (type) == '*' || (type) == '/' || (type == '-'))
 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_XNUM, TK_REG
+      TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_XNUM, TK_REG, DEREF, NEG
 
   /* TODO: Add more token types */
 
@@ -102,7 +103,7 @@ static bool make_token(char *e)
     }
 
     if (i == NR_REGEX) {
-      printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
+      Log("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
       return false;
     }
   }
@@ -119,7 +120,16 @@ uint32_t expr(char *e, bool *success)
 
   /* TODO: Insert codes to evaluate the expression. */
   /* TODO(); */
+  for (int i = 0; i < nr_token; ++i) {
+    if (tokens[i].type == '-' && (i == 0 || tokens[i - 1].type == '(' || isOp(tokens[i - 1].type))) {
+      tokens[i].type = NEG;
+    } else if (tokens[i].type == '-' && (i == 0 || tokens[i - 1].type == '(' || isOp(tokens[i - 1].type))) {
+      tokens[i].type = NEG;
+    }
+  }
+
   int ret = eval(0, nr_token - 1);
+  *success = true;
   return ret;
 }
 static bool check_parenthesis(int p, int q);
@@ -132,12 +142,26 @@ static int eval(int p, int q)
     return 0;
     assert(0);
   } else if (p == q) {
-    return str2val(p);
+    if (tokens[p].type == TK_NUM) {
+      return str2val(p);
+    } else if (tokens[p].type == TK_REG) {
+      bool succ;
+      int ret = isa_reg_str2val(tokens[p].str, &succ);
+      if (succ) {
+        return ret;
+      } else {
+        assert(0);
+      }
+    } else {
+      assert(0);
+    }
   } else if (q - p == 1) {
-    if (tokens[p].type == '-') {
+    if (tokens[p].type == NEG) {
       return -str2val(q);
-    } else if (tokens[p].type == '*') {
+    } else if (tokens[p].type == DEREF) {
       return dereference(str2val(q));
+    } else {
+      assert(0);
     }
   } else if (check_parenthesis(p, q) == true) {
     return eval(p + 1, q - 1);
@@ -205,7 +229,6 @@ int str2val(int p)
     assert(0);
   }
 }
-#define isOp(type) ((type) == '+' || (type) == '*' || (type) == '/' || (type == '-'))
 
 static inline int inferior(int p, int q)
 {

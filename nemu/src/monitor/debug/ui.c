@@ -89,6 +89,13 @@ static int cmd_info(char *args)
 
 static int cmd_p(char *args)
 {
+  bool succ;
+  int ret = expr(args, &succ);
+  if (succ) {
+    printf("%d\n", ret);
+  } else {
+    printf("Unproper expression\n");
+  }
   return 0;
 }
 

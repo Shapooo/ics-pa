@@ -57,12 +57,12 @@ void load_addr(vaddr_t *pc, ModR_M *m, Operand *rm) {
   else { disp_buf[0] = '\0'; }
 
   if (base_reg == -1) { base_buf[0] = '\0'; }
-  else { 
+  else {
     sprintf(base_buf, "%%%s", reg_name(base_reg, 4));
   }
 
   if (index_reg == -1) { index_buf[0] = '\0'; }
-  else { 
+  else {
     sprintf(index_buf, ",%%%s,%d", reg_name(index_reg, 4), 1 << scale);
   }
 

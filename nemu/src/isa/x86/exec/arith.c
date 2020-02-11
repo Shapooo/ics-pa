@@ -4,9 +4,9 @@ make_EHelper(add)
 {
   /* TODO(); */
   if (decinfo.opcode & 0x84) {
-    rtl_addi(&s1, &id_dest->val, &id_src->val);
+    rtl_addi(&s1, &id_dest->val, id_src->val);
   } else {
-    rtl_add(&s1, dest, src);
+    rtl_add(&s1, &id_dest->val, &id_src->val);
   }
 
   operand_write(id_dest, &s1);
@@ -30,7 +30,7 @@ make_EHelper(sub)
 {
   /* TODO(); */
   if (decinfo.opcode & 0x84) {
-    rtl_subi(&s1, &id_dest->val, &id_src->val);
+    rtl_subi(&s1, &id_dest->val, id_src->val);
   } else {
     rtl_sub(&s1, &id_dest->val, &id_src->val);
   }
@@ -55,7 +55,7 @@ make_EHelper(cmp)
 {
   /* TODO(); */
   if (decinfo.opcode & 0x84) {
-    rtl_subi(&s1, &id_dest->val, &id_src->val);
+    rtl_subi(&s1, &id_dest->val, id_src->val);
   } else {
     rtl_sub(&s1, &id_dest->val, &id_src->val);
   }
@@ -115,7 +115,7 @@ make_EHelper(dec)
 make_EHelper(neg)
 {
   /* TODO(); */
-  rtl_xori(&s1, id_dest->val, 0xffffffff);
+  rtl_xori(&s1, &id_dest->val, 0xffffffff);
   rtl_addi(&s1, &s1, 1);
 
   operand_write(id_dest, &s1);

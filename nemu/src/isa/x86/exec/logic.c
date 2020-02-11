@@ -28,7 +28,7 @@ make_EHelper(and) {
     rtl_and(&s0, &id_src->val, &id_dest->val);
   }
 
-  operand_write(&id_dest, &s0);
+  operand_write(id_dest, &s0);
 
   s1 = 0;
   rtl_set_CF(&s1);
@@ -46,7 +46,7 @@ make_EHelper(xor) {
     rtl_xor(&s0, &id_src->val, &id_dest->val);
   }
 
-  operand_write(&id_dest, &s0);
+  operand_write(id_dest, &s0);
 
   s1 = 0;
   rtl_set_CF(&s1);
@@ -64,7 +64,7 @@ make_EHelper(or) {
     rtl_or(&s0, &id_src->val, &id_dest->val);
   }
 
-  operand_write(&id_dest, &s0);
+  operand_write(id_dest, &s0);
 
   s1 = 0;
   rtl_set_CF(&s1);
@@ -83,7 +83,7 @@ make_EHelper(sar) {
     rtl_sar(&s0, &id_dest->val, &id_src->val);
   }
 
-  operand_write(&id_dest, &s0);
+  operand_write(id_dest, &s0);
 
   s1 = 0;
   rtl_set_OF(&s1);
@@ -101,10 +101,10 @@ make_EHelper(shl) {
     rtl_shri(&s1, &s0, id_src->val);
   } else {
     rtl_shl(&s0, &id_dest->val, &id_src->val);
-    rtl_shr(&s1, &s0, id_src->val);
+    rtl_shr(&s1, &s0, &id_src->val);
   }
 
-  operand_write(&id_dest, &s0);
+  operand_write(id_dest, &s0);
 
   s1 = (s1 != id_dest->val);
   rtl_set_OF(&s1);
@@ -123,7 +123,7 @@ make_EHelper(shr) {
     rtl_shr(&s0, &id_dest->val, &id_src->val);
   }
 
-  operand_write(&id_dest, &s0);
+  operand_write(id_dest, &s0);
 
   s1 = 0;
   rtl_set_OF(&s1);

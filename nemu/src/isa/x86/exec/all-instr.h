@@ -45,5 +45,9 @@ make_EHelper(not);
 make_EHelper(jmp);
 make_EHelper(jcc);
 make_EHelper(jmp_rm);
+make_EHelper(call);
+make_EHelper(ret);
+make_EHelper(ret_imm);
+make_EHelper(call_rm);
 
 make_EHelper(nop);

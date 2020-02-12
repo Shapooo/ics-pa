@@ -1,5 +1,9 @@
+#include "cpu/decode.h"
 #include "cpu/exec.h"
 #include "cc.h"
+#include "isa/rtl.h"
+#include "rtl/rtl-wrapper.h"
+#include "rtl/rtl.h"
 
 make_EHelper(jmp) {
   // the target address is calculated at the decode stage
@@ -26,25 +30,32 @@ make_EHelper(jmp_rm) {
 
 make_EHelper(call) {
   // the target address is calculated at the decode stage
-  TODO();
+  /* TODO(); */
+  rtl_push(&cpu.pc);
+  rtl_j(decinfo.jmp_pc);
 
   print_asm("call %x", decinfo.jmp_pc);
 }
 
 make_EHelper(ret) {
-  TODO();
+  /* TODO(); */
+  rtl_pop(&cpu.pc);
 
   print_asm("ret");
 }
 
 make_EHelper(ret_imm) {
-  TODO();
+  /* TODO(); */
+  rtl_pop(&cpu.pc);
+  rtl_addi(&cpu.esp, &cpu.esp, id_dest->val);
 
   print_asm("ret %s", id_dest->str);
 }
 
 make_EHelper(call_rm) {
-  TODO();
+  /* TODO(); */
+  rtl_push(&cpu.pc);
+  rtl_j(id_dest->val);
 
   print_asm("call *%s", id_dest->str);
 }

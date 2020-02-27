@@ -35,7 +35,7 @@ static inline void rtl_pop(rtlreg_t* dest) {
   // dest <- M[esp]
   // esp <- esp + 4
   /* TODO(); */
-  rtl_lm(&reg_l(R_ESP), dest, 4);
+  rtl_lm(dest, &reg_l(R_ESP), 4);
   reg_l(R_ESP) += 4;
 }
 

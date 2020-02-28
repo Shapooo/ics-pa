@@ -12,7 +12,7 @@ make_EHelper(add)
   operand_write(id_dest, &s1);
 
   if (id_dest->width != 4) {
-    rtl_andi(&s1, &s1, 0xffffffffu >> ((4 - id_dest->width) >> 3));
+    rtl_andi(&s1, &s1, 0xffffffffu >> ((4 - id_dest->width) << 3));
   }
 
   rtl_update_ZFSF(&s1, id_dest->width);
@@ -37,7 +37,7 @@ make_EHelper(sub)
   operand_write(id_dest, &s1);
 
   if (id_dest->width != 4) {
-    rtl_andi(&s1, &s1, 0xffffffffu >> ((4 - id_dest->width) >> 3));
+    rtl_andi(&s1, &s1, 0xffffffffu >> ((4 - id_dest->width) << 3));
   }
 
   rtl_update_ZFSF(&s1, id_dest->width);
@@ -60,7 +60,7 @@ make_EHelper(cmp)
     rtl_sub(&s1, &id_dest->val, &id_src->val);
   }
   if (id_dest->width != 4) {
-    rtl_andi(&s1, &s1, 0xffffffffu >> ((4 - id_dest->width) >> 3));
+    rtl_andi(&s1, &s1, 0xffffffffu >> ((4 - id_dest->width) << 3));
   }
 
   rtl_update_ZFSF(&s1, id_dest->width);
@@ -81,7 +81,7 @@ make_EHelper(inc)
   operand_write(id_dest, &s1);
 
   if (id_dest->width != 4) {
-    rtl_andi(&s1, &s1, 0xffffffffu >> ((4 - id_dest->width) >> 3));
+    rtl_andi(&s1, &s1, 0xffffffffu >> ((4 - id_dest->width) << 3));
   }
 
   rtl_update_ZFSF(&s1, id_dest->width);

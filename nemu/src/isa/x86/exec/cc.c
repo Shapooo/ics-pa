@@ -24,23 +24,23 @@ void rtl_setcc(rtlreg_t* dest, uint8_t subcode) {
     rtl_get_ZF(dest);
     break;
   case CC_BE:
-    rtl_get_CF(&s0);
-    rtl_get_ZF(&s1);
-    rtl_or(dest, &s0, &s1);
+    rtl_get_CF(&t0);
+    rtl_get_ZF(&t1);
+    rtl_or(dest, &t0, &t1);
     break;
   case CC_S:
     rtl_get_SF(dest);
     break;
   case CC_L:
-    rtl_get_SF(&s0);
-    rtl_get_OF(&s1);
-    *dest = (s0 != s1);
+    rtl_get_SF(&t0);
+    rtl_get_OF(&t1);
+    *dest = (t0 != t1);
   case CC_LE:
-    /* TODO(); */
     rtl_get_ZF(dest);
-    rtl_get_SF(&s0);
-    rtl_get_OF(&s1);
-    *dest |= (s0 != s1);
+    rtl_get_SF(&t0);
+    rtl_get_OF(&t1);
+    *dest |= (t0 != t1);
+    /* TODO(); */
     break;
   default:
     panic("should not reach here");

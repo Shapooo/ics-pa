@@ -41,6 +41,16 @@ void reg_test() {
 }
 
 void isa_reg_display() {
+  printf("[EAX] = %04x %02x %02x\n", reg_l(R_EAX)>>16, reg_w(R_AX)>>8, reg_b(R_AL));
+  printf("[ECX] = %04x %02x %02x\n", reg_l(R_ECX)>>16, reg_w(R_AX)>>8, reg_b(R_CL));
+  printf("[EDX] = %04x %02x %02x\n", reg_l(R_EDX)>>16, reg_w(R_AX)>>8, reg_b(R_DL));
+  printf("[EBX] = %04x %02x %02x\n", reg_l(R_EBX)>>16, reg_w(R_AX)>>8, reg_b(R_BL));
+  printf("[ESP] = %04x %02x %02x\n", reg_l(R_ESP)>>16, reg_w(R_AX)>>8, reg_b(R_SP) & 0xff);
+  printf("[EBP] = %04x %02x %02x\n", reg_l(R_EBP)>>16, reg_w(R_AX)>>8, reg_b(R_BP) & 0xff);
+  printf("[ESI] = %04x %02x %02x\n", reg_l(R_ESI)>>16, reg_w(R_AX)>>8, reg_b(R_SI) & 0xff);
+  printf("[EDI] = %04x %02x %02x\n", reg_l(R_EDI)>>16, reg_w(R_AX)>>8, reg_b(R_DI) & 0xff);
+  printf("[EIP] = %08x\n", cpu.pc);
+  printf("[CF] = %d, [ZF] = %d, [SF] = %d, [OF] = %d\n[eflags] = %08x\n", cpu.CF, cpu.ZF, cpu.SF, cpu.OF, cpu.eflags_val);
 }
 
 uint32_t isa_reg_str2val(const char *s, bool *success) {

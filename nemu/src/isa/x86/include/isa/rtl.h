@@ -43,14 +43,11 @@ static inline void rtl_is_sub_overflow(rtlreg_t* dest,
     const rtlreg_t* res, const rtlreg_t* src1, const rtlreg_t* src2, int width) {
   // dest <- is_overflow(src1 - src2)
   /* TODO(); */
-  rtl_msb(&t0, src1, width);
-  rtl_msb(&t1, src2, width);
-  rtl_msb(dest, res, width);
-  if (t0 != t1 && *dest == t1) {
-    *dest = 1;
-  } else {
-    *dest = 0;
-  }
+  rtl_xor(&t0, src1, src2);
+  rtl_xor(&t1, src1, res);
+  rtl_and(&t0, &t0, &t1);
+  rtl_msb(&t0, &t0, width);
+  *dest = t0;
 }
 
 static inline void rtl_is_sub_carry(rtlreg_t* dest,

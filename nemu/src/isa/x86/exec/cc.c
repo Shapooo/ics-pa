@@ -35,13 +35,14 @@ void rtl_setcc(rtlreg_t* dest, uint8_t subcode) {
     rtl_get_SF(&t0);
     rtl_get_OF(&t1);
     *dest = (t0 != t1);
+    break;
   case CC_LE:
     rtl_get_ZF(dest);
     rtl_get_SF(&t0);
     rtl_get_OF(&t1);
     *dest |= (t0 != t1);
-    /* TODO(); */
     break;
+    /* TODO(); */
   default:
     panic("should not reach here");
   case CC_P:

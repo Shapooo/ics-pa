@@ -42,13 +42,16 @@ void pio_write_w(ioaddr_t, uint32_t);
 void pio_write_b(ioaddr_t, uint32_t);
 
 make_EHelper(in) {
-  TODO();
+  /* TODO(); */
+  s0 = pio_read_b((ioaddr_t)id_src->val);
+  operand_write(id_dest, &s0);
 
   print_asm_template2(in);
 }
 
 make_EHelper(out) {
-  TODO();
+  /* TODO(); */
+  pio_write_b((ioaddr_t)id_dest->val, id_src->val);
 
   print_asm_template2(out);
 }

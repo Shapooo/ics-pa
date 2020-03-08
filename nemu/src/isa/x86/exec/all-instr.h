@@ -51,3 +51,6 @@ make_EHelper(ret_imm);
 make_EHelper(call_rm);
 
 make_EHelper(nop);
+
+make_EHelper(in);
+make_EHelper(out);

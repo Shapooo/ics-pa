@@ -41,6 +41,10 @@ make_EHelper(shl);
 make_EHelper(shr);
 make_EHelper(setcc);
 make_EHelper(not);
+make_EHelper(rol);
+make_EHelper(ror);
+make_EHelper(rcl);
+make_EHelper(rcr);
 
 make_EHelper(jmp);
 make_EHelper(jcc);
@@ -52,5 +56,7 @@ make_EHelper(call_rm);
 
 make_EHelper(nop);
 
+make_EHelper(lidt);
+make_EHelper(int);
 make_EHelper(in);
 make_EHelper(out);

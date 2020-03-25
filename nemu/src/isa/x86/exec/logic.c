@@ -149,3 +149,93 @@ make_EHelper(not) {
 
   print_asm_template1(not);
 }
+
+make_EHelper(rol) {
+  uint32_t count = id_src->val % (id_dest->width << 3);
+  uint32_t mask = 0xffffffff >> ((4 - id_dest->width) << 3);
+  s0 = (0xffffffff >> (4 - id_dest->width) << 3) & mask;
+  rtl_and(&s0, &id_dest->val, &s0);
+  s0 >>= (id_dest->width << 3) - count;
+  rtl_shli(&s1, &id_dest->val, id_src->val);
+  s1 &= mask;
+  rtl_or(&s0, &s0, &s1);
+
+  operand_write(id_dest, &s0);
+
+  s1 = s0 & 0x1;
+  rtl_set_CF(&s1);
+  if (id_src->val == 1) {
+    s0 = (s0 >> ((id_dest->width << 3) - 1)) & 0x1;
+    s1 = (s0 != s1);
+    rtl_set_OF(&s1);
+  }
+}
+
+make_EHelper(ror) {
+  int count = id_src->val % (id_dest->width << 3);
+  s0 = 0xffffffff >> ((4 << 3) - count);
+  rtl_and(&s0, &id_dest->val, &s0);
+  s0 <<= (id_dest->width) - count;
+  rtl_shri(&s1, &id_dest->val, id_src->val);
+  rtl_or(&s0, &s0, &s1);
+
+  operand_write(id_dest, &s0);
+
+  s1 = (s0 >> ((id_dest->width << 3) - 1));
+  rtl_set_CF(&s1);
+  if (id_src->val == 1) {
+    s0 = (s0 >> ((id_dest->width << 3) - 2)) & 0x1;
+    s1 = (s0 != s1);
+    rtl_set_OF(&s1);
+  }
+}
+
+make_EHelper(rcl) {
+  uint32_t count = id_src->val % (id_dest->width << 3);
+  uint32_t mask = 0xffffffff >> ((4 - id_dest->width) << 3);
+  s0 = (0xffffffff >> (4 - id_dest->width) << 3) & mask;
+  rtl_and(&s0, &id_dest->val, &s0);
+  s0 >>= (id_dest->width << 3) - count;
+  rtl_shli(&s1, &id_dest->val, id_src->val);
+  s1 &= mask;
+  rtl_or(&s0, &s0, &s1);
+
+  uint32_t tmpcf;
+  rtl_get_CF(&tmpcf);
+  s1 = s0 & 0x1;
+  s0 &= 0xffffffff << 1;
+  s0 += tmpcf;
+
+  operand_write(id_dest, &s0);
+
+  rtl_set_CF(&s1);
+  if (id_src->val == 1) {
+    s0 = (s0 >> ((id_dest->width << 3) - 1)) & 0x1;
+    s1 = (s0 != s1);
+    rtl_set_OF(&s1);
+  }
+}
+
+make_EHelper(rcr) {
+  int count = id_src->val % (id_dest->width << 3);
+  s0 = 0xffffffff >> ((4 << 3) - count);
+  rtl_and(&s0, &id_dest->val, &s0);
+  s0 <<= (id_dest->width) - count;
+  rtl_shri(&s1, &id_dest->val, id_src->val);
+  rtl_or(&s0, &s0, &s1);
+
+  uint32_t tmpcf;
+  rtl_get_CF(&tmpcf);
+  s1 = (s0 >> ((id_dest->width << 3) - 1));
+  s0 &= 0xffffffff >> (((4 - id_dest->width) << 3) + 1);
+  s0 += tmpcf << ((id_dest->width << 3) - 1);
+
+  operand_write(id_dest, &s0);
+
+  rtl_set_CF(&s1);
+  if (id_src->val == 1) {
+    s0 = (s0 >> ((id_dest->width << 3) - 2)) & 0x1;
+    s1 = (s0 != s1);
+    rtl_set_OF(&s1);
+  }
+}

@@ -3,7 +3,8 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 size_t strlen(const char *s) {
-  assert(s);
+  /* assert(s); */
+  /* comment assert for 0 addr in nemu */
   int result = 0;
   while (s[result] != '\0') {
     result++;
@@ -12,7 +13,7 @@ size_t strlen(const char *s) {
 }
 
 char *strcpy(char *dst, const char *src) {
-  assert(dst && src);
+  /* assert(dst && src); */
   int index = 0;
   do {
     dst[index] = src[index];
@@ -21,7 +22,8 @@ char *strcpy(char *dst, const char *src) {
 }
 
 char* strncpy(char* dst, const char* src, size_t n) {
-  assert(dst && src);
+  /* assert(dst && src); */
+  /* comment assert for 0 addr in nemu */
   int index = 0;
   while (index < n && src[index] != '\0') {
     dst[index] = src[index];
@@ -34,7 +36,8 @@ char* strncpy(char* dst, const char* src, size_t n) {
 }
 
 char* strcat(char* dst, const char* src) {
-  assert(dst && src);
+  /* assert(dst && src); */
+  /* comment assert for 0 addr in nemu */
   int dst_index = 0, src_index = 0;
   while (dst[dst_index] != '\0') {
     dst_index++;
@@ -47,7 +50,8 @@ char* strcat(char* dst, const char* src) {
 }
 
 int strcmp(const char* s1, const char* s2) {
-  assert(s1 && s2);
+  /* assert(s1 && s2); */
+  /* comment assert for 0 addr in nemu */
   int index = 0;
   while (s1[index] != '\0' && s2[index] != '\0') {
     if (s1[index] < s2[index]) {
@@ -67,7 +71,8 @@ int strcmp(const char* s1, const char* s2) {
 }
 
 int strncmp(const char* s1, const char* s2, size_t n) {
-  assert(s1 && s2);
+  /* assert(s1 && s2); */
+  /* comment assert for 0 addr in nemu */
   int index = 0;
   while (index < n) {
     if (s1[index] < s2[index]) {
@@ -81,7 +86,8 @@ int strncmp(const char* s1, const char* s2, size_t n) {
 }
 
 void* memset(void* v,int c,size_t n) {
-  assert(v);
+  /* assert(v); */
+  /* comment assert for 0 addr in nemu */
   int index = 0;
   unsigned char* tmpv = (unsigned char*) v;
   while (index < n) {
@@ -91,7 +97,8 @@ void* memset(void* v,int c,size_t n) {
 }
 
 void* memcpy(void* out, const void* in, size_t n) {
-  assert(out && in);
+  /* assert(out && in); */
+  /* comment assert for 0 addr in nemu */
   char *tmpout = out;
   const char *tmpin = in;
   int index = 0;

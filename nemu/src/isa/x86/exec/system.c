@@ -2,7 +2,7 @@
 
 make_EHelper(lidt) {
   /* TODO(); */
-  s0 = id_dest->val;
+  s0 = id_dest->addr;
   rtl_lm(&s1, &s0, 2);
   cpu.idtr.limit = s1;
   s0 += 2;
@@ -37,7 +37,10 @@ make_EHelper(int) {
 }
 
 make_EHelper(iret) {
-  TODO();
+  /* TODO(); */
+  rtl_pop(&decinfo.seq_pc);
+  rtl_pop(&cpu.cs);
+  rtl_pop(&cpu.eflags_val);
 
   print_asm("iret");
 }

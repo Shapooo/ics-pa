@@ -28,11 +28,6 @@ inline static uintptr_t sys_write(_Context *c) {
 }
 
 _Context *do_syscall(_Context *c) {
-  /* uintptr_t a[4]; */
-  /* a[0] = c->GPR1; */
-  /* a[1] = c->GPR2; */
-  /* a[2] = c->GPR3; */
-  /* a[3] = c->GPR4; */
   uintptr_t syscall_id = c->GPR1;
 
   switch (syscall_id) {
@@ -46,6 +41,10 @@ _Context *do_syscall(_Context *c) {
   }
   case (SYS_write): {
     c->GPRx = sys_write(c);
+    break;
+  }
+  case (SYS_brk): {
+    c->GPRx = 0;
     break;
   }
   default:

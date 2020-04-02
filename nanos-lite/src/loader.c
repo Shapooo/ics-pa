@@ -1,5 +1,6 @@
 #include "proc.h"
 #include <elf.h>
+#include "fs.h"
 
 #ifdef __ISA_AM_NATIVE__
 # define Elf_Ehdr Elf64_Ehdr
@@ -13,29 +14,34 @@ extern uint8_t ramdisk_start;
 extern uint8_t ramdisk_end;
 extern size_t ramdisk_read(void *buf, size_t offset, size_t len);
 extern size_t ramdisk_write(const void *buf, size_t offset, size_t len);
+extern int fs_open(const char *pathname, int flags, int mode);
+extern size_t fs_read(int fd, void *buf, size_t len);
+extern size_t fs_lseek(int fd, size_t offset, int whence);
+extern int fs_close(int fd);
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
-  /* TODO(); */
-  uintptr_t text_start;
-
+  uintptr_t prog_entry;
+  int fd = fs_open(filename, 0, 0);
   Elf_Ehdr elfHeader;
-  ramdisk_read(&elfHeader, 0, sizeof(Elf_Ehdr));
-  text_start = elfHeader.e_entry;
+  fs_read(fd, (void *)&elfHeader, sizeof(Elf_Ehdr));
+  prog_entry = elfHeader.e_entry;
+  uintptr_t phoff = elfHeader.e_phoff;
   Elf_Phdr tmpPhdr;
   for (int i = 0; i < elfHeader.e_phnum; ++i) {
-    ramdisk_read(&tmpPhdr, elfHeader.e_phoff, sizeof(Elf_Phdr));
+    fs_lseek(fd, phoff, SEEK_SET);
+    fs_read(fd, &tmpPhdr, sizeof(Elf_Phdr));
     if (tmpPhdr.p_type == PT_LOAD) {
-      ramdisk_read((void *)tmpPhdr.p_vaddr, tmpPhdr.p_offset,
-                    tmpPhdr.p_filesz);
+      fs_lseek(fd, tmpPhdr.p_offset, SEEK_SET);
+      fs_read(fd, (void *)tmpPhdr.p_vaddr, tmpPhdr.p_filesz);
       if (tmpPhdr.p_memsz > tmpPhdr.p_filesz) {
         memset((void *)tmpPhdr.p_vaddr + tmpPhdr.p_filesz, 0,
                tmpPhdr.p_memsz - tmpPhdr.p_filesz);
       }
     }
-    elfHeader.e_phoff += sizeof(Elf_Phdr);
+    phoff += sizeof(Elf_Phdr);
   }
-
-  return text_start;
+  fs_close(fd);
+  return prog_entry;
 }
 
 void naive_uload(PCB *pcb, const char *filename) {

@@ -18,8 +18,6 @@ extern size_t fs_read(int fd, void *buf, size_t len);
 extern size_t fs_write(int fd, const void *buf, size_t len);
 extern size_t fs_lseek(int fd, size_t offset, int whence);
 extern int fs_close(int fd);
-#define STDOUT 1
-#define STDERR 2
 
 inline static uintptr_t sys_open(_Context *c) {
   const char *path = (const char *)c->GPR2;
@@ -38,13 +36,8 @@ inline static uintptr_t sys_read(_Context *c) {
 inline static uintptr_t sys_write(_Context *c) {
   uintptr_t fd = c->GPR2;
   char *buf = (char *)c->GPR3;
-  uintptr_t count = c->GPR4;
-  if (fd == STDOUT || fd == STDERR) {
-    for (int i = 0; i < count; ++i) {
-      _putc(*buf++);
-    }
-  }
-  return count;
+  size_t count = c->GPR4;
+  return fs_write(fd, buf, count);
 }
 
 inline static uintptr_t sys_close(_Context *c) {

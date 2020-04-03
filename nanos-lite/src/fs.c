@@ -35,7 +35,7 @@ static Finfo file_table[] __attribute__((used)) = {
   {"stdin", 0, 0, 0, invalid_read, invalid_write},
   {"stdout", 0, 0, 0, invalid_read, serial_write},
   {"stderr", 0, 0, 0, invalid_read, serial_write},
-  /* {"/dev/tty", 0, 0, 0, invalid_read, serial_write}, */
+  {"/dev/tty", 0, 0, 0, invalid_read, serial_write},
   {"/dev/events", 0, 0, 0, events_read, invalid_write},
 #include "files.h"
 };
@@ -81,7 +81,6 @@ extern size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 size_t fs_write(int fd, const void *buf, size_t len) {
   if (file_table[fd].write) {
     len = file_table[fd].write(buf, file_table[fd].open_offset, len);
-    printf("write len = %d\n", len);
   } else {
     ramdisk_write(buf, file_table[fd].disk_offset + file_table[fd].open_offset,
                   len);

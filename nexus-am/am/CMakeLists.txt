@@ -38,4 +38,4 @@ target_sources(${PROJECT_NAME}
   src/x86/nemu/trap.S
   src/x86/nemu/boot/start.S)
 
-target_include_directories(${PROJECT_NAME} PRIVATE include)
+target_include_directories(${PROJECT_NAME} PUBLIC include)

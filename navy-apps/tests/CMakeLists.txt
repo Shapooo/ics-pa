@@ -1,0 +1,5 @@
+add_subdirectory(bmp)
+add_subdirectory(dummy)
+add_subdirectory(events)
+add_subdirectory(hello)
+add_subdirectory(text)

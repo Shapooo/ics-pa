@@ -5,6 +5,14 @@ make_EHelper(mov) {
   print_asm_template2(mov);
 }
 
+make_EHelper(movs) {
+  operand_write(id_dest, &id_src->val);
+  cpu.esi += (cpu.DF) ? (-id_dest->width) : id_dest->width;
+  cpu.edi += (cpu.DF) ? (-id_dest->width) : id_dest->width;
+
+  print_asm_template1(movs);
+}
+
 make_EHelper(push) {
   /* TODO(); */
   rtl_push(&id_dest->val);

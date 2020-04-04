@@ -82,6 +82,32 @@ static inline void decode_op_rm(vaddr_t *pc, Operand *rm, bool load_rm_val, Oper
   read_ModR_M(pc, rm, load_rm_val, reg, load_reg_val);
 }
 
+/* Xb, Xv
+ * Memory addressed by DS:SI
+ */
+static inline make_DopHelper(X) {
+  op->type = OP_TYPE_MEM;
+  rtl_li(&op->addr, cpu.esi);
+  if (load_val) {
+    rtl_lm(&op->val, &op->addr, op->width);
+  }
+
+  print_Dop(op->str, OP_STR_SIZE, "0x%x", op->addr);
+}
+
+/* Yb, Yv
+ * Memory addressed by ES:DI
+ */
+static inline make_DopHelper(Y) {
+  op->type = OP_TYPE_MEM;
+  rtl_li(&op->addr, cpu.edi);
+  if (load_val) {
+    rtl_lm(&op->val, &op->addr, op->width);
+  }
+
+  print_Dop(op->str, OP_STR_SIZE, "0x%x", op->addr);
+}
+
 /* Ob, Ov */
 static inline make_DopHelper(O) {
   op->type = OP_TYPE_MEM;
@@ -258,6 +284,11 @@ make_DHelper(O2a) {
 make_DHelper(a2O) {
   decode_op_a(pc, id_src, true);
   decode_op_O(pc, id_dest, false);
+}
+
+make_DHelper(X2Y) {
+  decode_op_X(pc, id_src, true);
+  decode_op_Y(pc, id_dest, false);
 }
 
 make_DHelper(J) {

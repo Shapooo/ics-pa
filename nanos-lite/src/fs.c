@@ -66,14 +66,16 @@ int fs_open(const char *pathname, int flags, int mode)
   return fd;
 }
 
-/* FIXME: err situation */
-
+#define file_remain(fd) (file_table[(fd)].size - file_table[(fd)].open_offset)
 extern size_t ramdisk_read(void *buf, size_t offset, size_t len);
 size_t fs_read(int fd, void *buf, size_t len)
 {
   if (file_table[fd].read) {
     len = file_table[fd].read(buf, file_table[fd].open_offset, len);
+  } else if (file_table[fd].open_offset >= file_table[fd].size) {
+    return 0;
   } else {
+    len = (len <= file_remain(fd)) ? len : file_remain(fd);
     ramdisk_read(buf, file_table[fd].disk_offset + file_table[fd].open_offset,
                  len);
   }
@@ -85,7 +87,10 @@ extern size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 size_t fs_write(int fd, const void *buf, size_t len) {
   if (file_table[fd].write) {
     len = file_table[fd].write(buf, file_table[fd].open_offset, len);
+  } else if (file_table[fd].open_offset >= file_table[fd].size) {
+    return 0;
   } else {
+    len = (len <= file_remain(fd)) ? len : file_remain(fd);
     ramdisk_write(buf, file_table[fd].disk_offset + file_table[fd].open_offset,
                   len);
   }

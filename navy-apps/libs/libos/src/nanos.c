@@ -55,19 +55,19 @@ void _exit(int status) {
 
 int _open(const char *path, int flags, mode_t mode) {
   /* _exit(SYS_open); */
-  return _syscall_(SYS_open, (uintptr_t)path, flags, mode);
+  return _syscall_(SYS_open, (intptr_t)path, flags, mode);
 }
 
 int _write(int fd, void *buf, size_t count) {
   /* _exit(SYS_write); */
-  return _syscall_(SYS_write, fd, (uintptr_t)buf, count);
+  return _syscall_(SYS_write, fd, (intptr_t)buf, count);
 }
 
 extern char end;
 static void *program_break = &end;
 void *_sbrk(intptr_t increment) {
   if (increment) {
-    if (_syscall_(SYS_brk, (uintptr_t)(program_break + increment), 0, 0) == 0) {
+    if (_syscall_(SYS_brk, (intptr_t)(program_break + increment), 0, 0) == 0) {
       void *ret = program_break;
       program_break += increment;
       return ret;
@@ -80,7 +80,7 @@ void *_sbrk(intptr_t increment) {
 
 int _read(int fd, void *buf, size_t count) {
   /* _exit(SYS_read); */
-  return _syscall_(SYS_read, fd, (uintptr_t)buf, count);
+  return _syscall_(SYS_read, fd, (intptr_t)buf, count);
 }
 
 int _close(int fd) {
@@ -94,8 +94,8 @@ off_t _lseek(int fd, off_t offset, int whence) {
 }
 
 int _execve(const char *fname, char * const argv[], char *const envp[]) {
-  _exit(SYS_execve);
-  return 0;
+  /* _exit(SYS_execve); */
+  return _syscall_(SYS_execve, (intptr_t)fname, (intptr_t)argv, (intptr_t)envp);
 }
 
 // The code below is not used by Nanos-lite.

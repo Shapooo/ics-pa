@@ -1,10 +1,14 @@
 #include "common.h"
 #include "syscall.h"
 #include <stdint.h>
+#include "proc.h"
+
+void naive_uload(PCB *pcb, const char *filename);
 
 inline static uintptr_t sys_exit(_Context *c) {
-  uintptr_t exit_status = c->GPR2;
-  _halt(exit_status);
+  /* uintptr_t exit_status = c->GPR2; */
+  /* _halt(exit_status); */
+  naive_uload(NULL, "/bin/init");
   return 0;
 }
 
@@ -52,6 +56,12 @@ inline static uintptr_t sys_lseek(_Context *c) {
   return fs_lseek(fd, offset, whence);
 }
 
+inline static uintptr_t sys_execve(_Context *c) {
+  const char *fname = (const char *)c->GPR2;
+  naive_uload(NULL, fname);
+  return 0;
+}
+
 _Context *do_syscall(_Context *c) {
   uintptr_t syscall_id = c->GPR1;
 
@@ -86,6 +96,10 @@ _Context *do_syscall(_Context *c) {
   }
   case (SYS_brk): {
     c->GPRx = 0;
+    break;
+  }
+  case (SYS_execve): {
+    c->GPRx = sys_execve(c);
     break;
   }
   default:
